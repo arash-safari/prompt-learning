@@ -61,7 +61,7 @@ class CustomCLIP(nn.Module):
 
 
 @TRAINER_REGISTRY.register()
-class Arash1(TrainerX):
+class CenterClass(TrainerX):
     """Modified CoOp Trainer using class centers as text embeddings."""
 
     def check_cfg(self, cfg):

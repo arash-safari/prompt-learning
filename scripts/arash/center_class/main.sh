@@ -4,7 +4,7 @@
 
 # custom config
 DATA=../datasets
-TRAINER=Arash1
+TRAINER=CenterClass
 
 DATASET=$1
 CFG=$2  # config file
