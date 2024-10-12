@@ -30,7 +30,7 @@ def load_clip_to_cpu(cfg):
 
     except RuntimeError:
         state_dict = torch.load(model_path, map_location="cpu")
-    design_details = {"trainer": 'CoOp',
+    design_details = {"trainer": 'CenterClass',
                       "vision_depth": 0,
                       "language_depth": 0, "vision_ctx": 0,
                       "language_ctx": 0}
@@ -62,10 +62,10 @@ class CustomCLIP(nn.Module):
 
 @TRAINER_REGISTRY.register()
 class CenterClass(TrainerX):
-    """Modified CoOp Trainer using class centers as text embeddings."""
+    """Modified CenterClass Trainer using class centers as text embeddings."""
 
     def check_cfg(self, cfg):
-        assert cfg.TRAINER.COOP.PREC in ["fp16", "fp32", "amp"]
+        assert cfg.TRAINER.CENTERCLASS.PREC in ["fp16", "fp32", "amp"]
 
     def build_model(self):
         cfg = self.cfg
@@ -74,7 +74,7 @@ class CenterClass(TrainerX):
         print(f"Loading CLIP (backbone: {cfg.MODEL.BACKBONE.NAME})")
         clip_model = load_clip_to_cpu(cfg)
 
-        if cfg.TRAINER.COOP.PREC == "fp32" or cfg.TRAINER.COOP.PREC == "amp":
+        if cfg.TRAINER.CENTERCLASS.PREC == "fp32" or cfg.TRAINER.CENTERCLASS.PREC == "amp":
             # CLIP's default precision is fp16
             clip_model.float()
 
@@ -90,7 +90,7 @@ class CenterClass(TrainerX):
         self.sched = build_lr_scheduler(self.optim, cfg.OPTIM)
         self.register_model("clip_model", self.model, self.optim, self.sched)
 
-        self.scaler = GradScaler() if cfg.TRAINER.COOP.PREC == "amp" else None
+        self.scaler = GradScaler() if cfg.TRAINER.CENTERCLASS.PREC == "amp" else None
 
         device_count = torch.cuda.device_count()
         if device_count > 1:
@@ -147,7 +147,7 @@ class CenterClass(TrainerX):
     def forward_backward(self, batch):
         image, label = self.parse_batch_train(batch)
 
-        prec = self.cfg.TRAINER.COOP.PREC
+        prec = self.cfg.TRAINER.CENTERCLASS.PREC
         if prec == "amp":
             with autocast():
                 output = self.model(image)

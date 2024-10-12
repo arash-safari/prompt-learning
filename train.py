@@ -22,7 +22,7 @@ import datasets.imagenet_sketch
 import datasets.imagenetv2
 import datasets.imagenet_a
 import datasets.imagenet_r
-
+import trainers.centerclass
 import trainers.coop
 import trainers.cocoop
 import trainers.zsclip
@@ -92,6 +92,13 @@ def extend_cfg(cfg):
 
     cfg.TRAINER.COOP = CN()
     cfg.TRAINER.COOP.N_CTX = 16  # number of context vectors
+    cfg.TRAINER.COOP.CSC = False  # class-specific context
+    cfg.TRAINER.COOP.CTX_INIT = ""  # initialization words
+    cfg.TRAINER.COOP.PREC = "fp16"  # fp16, fp32, amp
+    cfg.TRAINER.COOP.CLASS_TOKEN_POSITION = "end"  # 'middle' or 'end' or 'front'
+   
+    cfg.TRAINER.CENTERCLASS = CN()
+    cfg.TRAINER.CENTERCLASS.N_CTX = 16  # number of context vectors
     cfg.TRAINER.COOP.CSC = False  # class-specific context
     cfg.TRAINER.COOP.CTX_INIT = ""  # initialization words
     cfg.TRAINER.COOP.PREC = "fp16"  # fp16, fp32, amp
@@ -238,4 +245,5 @@ if __name__ == "__main__":
         help="modify config options using the command-line",
     )
     args = parser.parse_args()
+    print('args new', args)
     main(args)
